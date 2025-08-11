@@ -26,7 +26,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	var mapPosition = get_mouse_map_position()
 	
 	# The cell position is in the upper left corner. By adding our cell_size / 2 we're getting our coordinate to the center of the square
-	character_controller.target_position = to_global(mapPosition)  + (cell_size / 2)
+	# We're excluding the y, as we want our guy to stand on the floor!
+	var offset: Vector3 = Vector3(cell_size.x, 0, cell_size.z) / 2
+	character_controller.target_position = to_global(mapPosition)  + offset
 	
 
 func get_mouse_map_position():
