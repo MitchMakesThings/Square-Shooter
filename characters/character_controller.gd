@@ -1,11 +1,15 @@
 class_name CharacterController extends CharacterBody3D
 
-@onready
-var target_position : Vector3 = global_position
+var movement_path : PackedVector3Array = []
 
 func _physics_process(delta):
-	if ((global_position - target_position).length() < .1):
+	if len(movement_path) < 1:
 		return
-	velocity = (target_position - global_position).normalized() * 300 * delta
-	move_and_slide()
+	var target_position = movement_path[0]	
+	if ((global_position - target_position).length() < .1):
+		movement_path.remove_at(0)
+		return
+	global_position = global_position.lerp(target_position, .1)
+	#velocity = (target_position - global_position).normalized() * 300 * delta
+	#move_and_slide()
 	

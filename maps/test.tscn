@@ -1,9 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://cdl1dail5js75"]
+[gd_scene load_steps=14 format=3 uid="uid://cdl1dail5js75"]
 
 [ext_resource type="MeshLibrary" uid="uid://cqr5s6snbs7fw" path="res://gridmap/meshlibrary.tres" id="1_gyc4i"]
 [ext_resource type="Script" uid="uid://bmbnhkiou32i0" path="res://maps/controller.gd" id="2_cncnj"]
 [ext_resource type="Texture2D" uid="uid://5t8b7cwqkvqp" path="res://gridmap/0b4bd449e0b57400aff18c3c7003d923d889b7e9.png" id="3_3akd8"]
 [ext_resource type="PackedScene" uid="uid://d1q5m2da03mjm" path="res://characters/soldier.tscn" id="4_b6wm1"]
+[ext_resource type="PackedScene" uid="uid://djhekxon2i3kn" path="res://player_controller.tscn" id="5_brsxd"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gyc4i"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -18,11 +19,11 @@ sky = SubResource("Sky_cncnj")
 tonemap_mode = 2
 glow_enabled = true
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b6wm1"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_brsxd"]
 albedo_texture = ExtResource("3_3akd8")
 
 [sub_resource type="QuadMesh" id="QuadMesh_brsxd"]
-material = SubResource("StandardMaterial3D_b6wm1")
+material = SubResource("StandardMaterial3D_brsxd")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_cncnj"]
 
@@ -85,4 +86,6 @@ shape = SubResource("SphereShape3D_cncnj")
 mesh = SubResource("SphereMesh_b6wm1")
 
 [node name="Character_Soldier" parent="." instance=ExtResource("4_b6wm1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3.73847)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.49545, 1, -1.58061)
+
+[node name="PlayerController" parent="." instance=ExtResource("5_brsxd")]

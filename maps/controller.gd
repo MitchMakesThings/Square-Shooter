@@ -7,6 +7,10 @@ var marker: Node3D
 @export
 var character_controller : CharacterController
 
+var navMap : AStar3D = AStar3D.new()
+
+func _ready():
+	calculate_nav()
 
 func _physics_process(_delta) -> void:
 	var mapPosition = get_mouse_map_position()
@@ -24,11 +28,28 @@ func _unhandled_input(event: InputEvent) -> void:
 	if (!(event as InputEventMouseButton).pressed):
 		return
 	var mapPosition = get_mouse_map_position()
+	if mapPosition == null:
+		return
+	
+	var characterLocalPosition: Vector3 = to_local(character_controller.global_position)
+	var characterMapPosition: Vector3i = local_to_map(characterLocalPosition)
+	
+	var targetId: int = navMap.get_closest_point(mapPosition)
+	var characterId: int = navMap.get_closest_point(characterMapPosition)
+	
+	var path: PackedVector3Array = navMap.get_point_path(characterId, targetId)
+	if len(path) == 0:
+		print('No path')
+		return
 	
 	# The cell position is in the upper left corner. By adding our cell_size / 2 we're getting our coordinate to the center of the square
 	# We're excluding the y, as we want our guy to stand on the floor!
 	var offset: Vector3 = Vector3(cell_size.x, 0, cell_size.z) / 2
-	character_controller.target_position = to_global(mapPosition)  + offset
+	var world_path: Array[Variant] = []
+	for pathPos in path:
+		world_path.append(to_global(map_to_local(pathPos)) - Vector3(0, cell_size.y / 2, 0))
+	
+	character_controller.movement_path = world_path
 	
 
 func get_mouse_map_position():
@@ -66,3 +87,41 @@ func get_mouse_world_pos():
 		return null
 		
 	return result.position
+	
+func calculate_nav():
+	var i = 0
+	for cell in get_used_cells():
+		var cell_above = cell + Vector3i(0, 1, 0)
+		if get_cell_item(cell_above) != INVALID_CELL_ITEM:
+			continue
+		navMap.add_point(i, cell_above)
+		i += 1
+		
+	var surroundingCells: Array[Variant] = [
+		Vector3i(-1, 0, 1),
+		Vector3i(0, 0, 1),
+		Vector3i(1, 0, 1),
+		Vector3i(-1, 0, 0),
+		Vector3i(1, 0, 0),
+		Vector3i(-1, 0, -1),
+		Vector3i(0, 0, -1),
+		Vector3i(1, 0, -1),
+	]
+	var allCells: Array[Variant] = []
+	for cell in surroundingCells:
+		allCells.append(cell + Vector3i(0, 1, 0))
+		allCells.append(cell + Vector3i(0, -1, 0))
+		allCells.append(cell)
+		
+	for pointId : int in navMap.get_point_ids():
+		var pos: Vector3i = Vector3i(navMap.get_point_position(pointId))
+		for surroundingCell in allCells:
+			var cellToTest = pos + surroundingCell
+			# Make sure the square isn't a wall
+			if get_cell_item(cellToTest) != INVALID_CELL_ITEM:
+				continue
+			# And that there is something to stand on underneath it!
+			if get_cell_item(cellToTest + Vector3i(0, -1, 0)) == INVALID_CELL_ITEM:
+				continue	
+			var cellToTestNavId = navMap.get_closest_point(cellToTest)
+			navMap.connect_points(pointId, cellToTestNavId, true)

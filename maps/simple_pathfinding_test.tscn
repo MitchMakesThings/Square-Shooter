@@ -1,0 +1,58 @@
+[gd_scene load_steps=10 format=3 uid="uid://eebpbea5fco1"]
+
+[ext_resource type="Script" uid="uid://bmbnhkiou32i0" path="res://maps/controller.gd" id="1_1tr8l"]
+[ext_resource type="MeshLibrary" uid="uid://cqr5s6snbs7fw" path="res://gridmap/meshlibrary.tres" id="1_5m8a4"]
+[ext_resource type="PackedScene" uid="uid://d1q5m2da03mjm" path="res://characters/soldier.tscn" id="3_whx71"]
+[ext_resource type="Texture2D" uid="uid://5t8b7cwqkvqp" path="res://gridmap/0b4bd449e0b57400aff18c3c7003d923d889b7e9.png" id="4_l72d2"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_l72d2"]
+sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+
+[sub_resource type="Sky" id="Sky_56581"]
+sky_material = SubResource("ProceduralSkyMaterial_l72d2")
+
+[sub_resource type="Environment" id="Environment_xutma"]
+background_mode = 2
+sky = SubResource("Sky_56581")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b6wm1"]
+albedo_texture = ExtResource("4_l72d2")
+
+[sub_resource type="QuadMesh" id="QuadMesh_56581"]
+material = SubResource("StandardMaterial3D_b6wm1")
+
+[node name="SimplePathfindingTest" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_xutma")
+
+[node name="GridMap" type="GridMap" parent="." node_paths=PackedStringArray("camera", "marker", "character_controller")]
+mesh_library = ExtResource("1_5m8a4")
+cell_size = Vector3(1, 1, 1)
+data = {
+"cells": PackedInt32Array(65536, 0, 327680, 0, 0, 327680, 65535, 0, 327680, 65535, 1, 327680, 0, 1, 327680)
+}
+script = ExtResource("1_1tr8l")
+camera = NodePath("../Camera3D")
+marker = NodePath("../Marker")
+character_controller = NodePath("../Soldier")
+metadata/_editor_floor_ = Vector3(0, 0, 0)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.999936, -0.0100886, 0.00510767, 0, 0.451691, 0.892175, -0.0113079, -0.892118, 0.451662, 0.151208, 5.67156, 3.00022)
+
+[node name="Soldier" parent="." instance=ExtResource("3_whx71")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.538552, 2, 0.256323)
+
+[node name="Marker" type="Node3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Marker"]
+transform = Transform3D(1, 0, 0, 0, 1.19249e-08, 1, 0, -1, 1.19249e-08, 0, 0, 0)
+mesh = SubResource("QuadMesh_56581")
